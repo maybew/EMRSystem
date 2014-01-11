@@ -1,0 +1,115 @@
+package com.emrs.dao;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Record;
+
+public class RecordDAO {
+	private static RecordDAO INSTANCE = new RecordDAO();
+	
+	private RecordDAO() {		
+	}
+	
+	public static RecordDAO getRecordDAO() {
+		return INSTANCE;
+	}
+	
+	public Integer insertRecord(Record record) {
+		return (Integer)JPAOperator.insertRecord(record);
+	}
+	
+	public Record find(int rid) {
+		return JPAOperator.find(rid, Record.class);
+	}
+	
+	public void update(Record record) {
+		JPAOperator.update(record);
+	}
+	
+	public void delete(Record record) {
+		JPAOperator.delete(record);
+	}
+	
+	public List<Record> getRecordByPatient(String pid) {
+		String sql = "select r from Record r where r.patient.pid = :pid";
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("pid", pid);
+		return JPAOperator.query(sql, map, Record.class, 1, Integer.MAX_VALUE / 2);
+	}
+	
+	/*
+	 * orderType:
+	 * 0：自然排序
+	 * 1: 按名字从a-z
+	 * 2: 按名字从z-a
+	 * 3: 按日期从近到远
+	 * 4: 按日期从远到近
+	 * searchType:
+	 * 0: 不搜索
+	 * 1: 按病人名字搜索
+	 * 2: 按病人id搜索
+	 */
+	public List<Record> searchRecord(int pageNum, int pageSize, int orderType, int searchType, String keyword, Date begin, Date end, String department, int gender) {
+		String sql = "select r from Record r where r.rid > 0";
+		Map<String ,Object> map =new HashMap<String ,Object>();
+		
+		switch(searchType) {
+		case 0 :
+			break;
+		case 1 :
+			sql += " AND r.patient.fname like :keyWord";
+			map.put("keyWord", "%"+keyword+"%");
+			break;
+		case 2 :
+			sql += " AND r.patient.pid = :keyWord";
+			map.put("keyWord", keyword);
+			break;
+		}
+		if(department != null) {
+			sql += " AND r.doctor.department = :department";
+			map.put("department", department);
+		}
+		if(gender >= 0) {
+			sql += " AND r.patient.gender = :gender";
+			map.put("gender", gender);
+		}
+		if(begin != null && end != null) {
+			sql += " AND r.ctime >= :begin AND r.ctime <= :end";
+			map.put("begin", begin);
+			map.put("end", end);
+		} else if(begin != null) {
+			sql += " AND r.ctime >= :begin";
+			map.put("begin", begin);
+		} else if(end != null) {
+			sql += " AND r.ctime <= :end";
+			map.put("end", end);
+		}
+		switch(orderType) {
+		case 0 :
+			break;
+		case 1 :
+			sql += " order by r.patient.fname ASC";
+			break;
+		case 2 :
+			sql += " order by r.patient.fname DESC";
+			break;
+		case 3 :
+			sql += " order by r.ctime ASC";
+			break;
+		case 4 :
+			sql += " order by r.ctime DESC";
+			break;
+		}
+		
+		
+		List<Record> lr =JPAOperator.query(sql, map, Record.class, pageNum, pageSize);
+		
+		return lr;
+	}
+	
+}

@@ -1,0 +1,142 @@
+package com.emrs.service;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.emrs.config.Configure;
+import com.emrs.dao.DoctorDAO;
+import com.emrs.dao.HealthDAO;
+import com.emrs.dao.MedicalDAO;
+import com.emrs.dao.NoteDAO;
+import com.emrs.dao.PatientDAO;
+import com.emrs.dao.PatientlistDAO;
+import com.emrs.dao.RecordDAO;
+import com.emrs.dao.VisitDAO;
+import com.emrs.po.Doctor;
+import com.emrs.po.Health;
+import com.emrs.po.Medical;
+import com.emrs.po.Note;
+import com.emrs.po.Patient;
+import com.emrs.po.Record;
+import com.emrs.po.Visit;
+import com.emrs.util.JSONUtils;
+import com.emrs.util.TimeFormatter;
+
+public class RecordService {
+	PatientDAO pdao = PatientDAO.getPatientDAO();
+	DoctorDAO ddao = DoctorDAO.getDoctorDAO();
+	PatientlistDAO pldao = PatientlistDAO.getPatientlistDAO();
+	RecordDAO rdao = RecordDAO.getRecordDAO();
+	HealthDAO hdao = HealthDAO.getHealthDAO();
+	MedicalDAO mdao = MedicalDAO.getMedicalDAO();
+	VisitDAO vdao = VisitDAO.getVisitDAO();
+	NoteDAO ndao = NoteDAO.getNoteDAO();
+
+	public List<Record> getRecordByPatient(String pid) {
+		return rdao.getRecordByPatient(pid);
+	}
+
+	public JSONObject getRecordContent(int rid) {
+		JSONObject object = new JSONObject();
+
+		Record record = rdao.find(rid);
+		JSONArray healths = JSONUtils.toJSONArray(hdao.getHealthByRecord(rid));
+		JSONArray medicals = JSONUtils
+				.toJSONArray(mdao.getMedicalByRecord(rid));
+		JSONArray visits = JSONUtils.toJSONArray(vdao.getVisitByRecord(rid));
+		JSONArray notes = JSONUtils.toJSONArray(ndao.getNoteByRecord(rid));
+
+		try {
+			object.put("record", record.toJSON());
+			object.put("patient", record.getPatient().toJSON());
+			object.put("doctor", record.getDoctor().toJSON());
+			object.put("health", healths);
+			object.put("medical", medicals);
+			object.put("visit", visits);
+			object.put("note", notes);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return object;
+
+	}
+
+	public void addRecordFromReq(HttpServletRequest req) {
+		Record record = new Record();
+
+		Doctor doctor = (Doctor) req.getSession().getAttribute("account");
+		Patient patient = pdao.find(req.getParameter("pid"));
+
+		Date now = new Date();
+		record.setCtime(now);
+		record.setDoctor(doctor);
+		record.setMtime(now);
+		record.setPatient(patient);
+
+		int recordId = rdao.insertRecord(record);
+
+		this.addHealthToRecord(recordId, now, req.getParameter("health"));
+		this.addMedicalToRecord(recordId, now, req.getParameter("medical"));
+		this.addVisitToRecord(recordId, now, req.getParameter("visit"));
+		this.addNoteToRecord(recordId, now, req.getParameter("note"));
+	}
+
+	public void addHealthToRecord(int rid, Date date, String text) {
+		Health health = new Health();
+		Record record = rdao.find(rid);
+		health.setCtime(date);
+		health.setRecord(record);
+		health.setText(text);
+
+		hdao.insert(health);
+	}
+
+	public void addMedicalToRecord(int rid, Date date, String text) {
+		Medical medical = new Medical();
+		Record record = rdao.find(rid);
+		medical.setCtime(date);
+		medical.setRecord(record);
+		medical.setText(text);
+
+		mdao.insert(medical);
+	}
+
+	public void addVisitToRecord(int rid, Date date, String text) {
+		Visit visit = new Visit();
+		Record record = rdao.find(rid);
+		visit.setCtime(date);
+		visit.setRecord(record);
+		visit.setText(text);
+
+		vdao.insert(visit);
+	}
+
+	public void addNoteToRecord(int rid, Date date, String text) {
+		Note note = new Note();
+		Record record = rdao.find(rid);
+		note.setCtime(date);
+		note.setRecord(record);
+		note.setText(text);
+
+		ndao.insert(note);
+	}
+
+	public List<Record> searchRecord(int pageNum, int orderType, int searchType, String keyword, String begin, String end, String department, int gender) {
+		if("All".equals(department))
+			department = null;
+		Date beginDate = null;
+		Date endDate = null;
+		if(!"".equals(begin))
+			beginDate = TimeFormatter.getDate(begin);
+		if(!"".equals(end))
+			endDate = TimeFormatter.getDate(end);
+		return rdao.searchRecord(pageNum, Configure.PAGESIZE, orderType, searchType, keyword, beginDate, endDate, department, gender);
+	}
+}

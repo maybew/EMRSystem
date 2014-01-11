@@ -1,0 +1,14 @@
+package com.emrs.service;
+
+import com.emrs.dao.AdminDAO;
+import com.emrs.po.Admin;
+
+public class AdminService {
+	AdminDAO dao = AdminDAO.getAdminDAO();
+
+	public Admin getAdminById(String id) {
+		if (id.equals("") || id == null)
+			return null;
+		return dao.find(id);
+	}
+}

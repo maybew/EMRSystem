@@ -1,0 +1,14 @@
+package com.emrs.service;
+
+import com.emrs.dao.PatientDAO;
+import com.emrs.po.Patient;
+
+public class PatientService {
+	PatientDAO dao = PatientDAO.getPatientDAO();
+	
+	public Patient getPatientById(String id) {
+		if(id.equals("") || id == null) return null;
+		return dao.find(id);
+	}
+	
+}

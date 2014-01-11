@@ -1,0 +1,13 @@
+package com.emrs.po;
+
+public class Account {
+	private String type;
+	
+	public Account(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return type;
+	}
+}

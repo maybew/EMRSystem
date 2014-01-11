@@ -1,0 +1,31 @@
+package com.emrs.dao;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Visit;
+
+public class VisitDAO {
+private static VisitDAO INSTANCE = new VisitDAO();
+	
+	private VisitDAO() {		
+	}
+	
+	public static VisitDAO getVisitDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Visit visit) {
+		JPAOperator.insert(visit);
+	}
+	
+	public Visit find(int vid) {
+		return JPAOperator.find(vid, Visit.class);
+	}
+	
+	public void update(Visit visit) {
+		JPAOperator.update(visit);
+	}
+	
+	public void delete(Visit visit) {
+		JPAOperator.delete(visit);
+	}
+}

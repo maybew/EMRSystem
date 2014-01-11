@@ -1,0 +1,31 @@
+package com.emrs.dao;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Note;
+
+public class NoteDAO {
+private static NoteDAO INSTANCE = new NoteDAO();
+	
+	private NoteDAO() {		
+	}
+	
+	public static NoteDAO getNoteDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Note note) {
+		JPAOperator.insert(note);
+	}
+	
+	public Note find(int nid) {
+		return JPAOperator.find(nid, Note.class);
+	}
+	
+	public void update(Note note) {
+		JPAOperator.update(note);
+	}
+	
+	public void delete(Note note) {
+		JPAOperator.delete(note);
+	}
+}

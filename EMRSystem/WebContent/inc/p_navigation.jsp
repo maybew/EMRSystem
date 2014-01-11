@@ -1,0 +1,72 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="com.emrs.po.*"%>
+<%
+Account account = (Account)session.getAttribute("account");
+Patient patient = null;
+if(account != null && account.getType().equals("patient"))
+	patient = (Patient)account;
+else
+	patient = new Patient();
+%>
+<%
+String url = request.getRequestURI();
+String block = null;
+if("/EMRSystem/p_detail.jsp".equals(url) || "/EMRSystem/p_edit.jsp".equals(url))
+	block = "0_1";
+else if("/EMRSystem/p_insurance_detail.jsp".equals(url))
+	block = "0_2";
+else if("/EMRSystem/p_changepassword.jsp".equals(url))
+	block = "0_4";
+else if("/EMRSystem/p_search.jsp".equals(url))
+	block = "1_1";
+else if("/EMRSystem/p_doctors.jsp".equals(url))
+	block = "2_1";
+%>
+
+<div id="sidebar">
+	<div id="sidebar-wrapper">
+
+		<h1 id="sidebar-title">
+			<a href="#">EMRS</a>
+		</h1>
+
+		<a href="#"><img id="logo" src="resources/images/logo.png"
+			alt="Simpla Admin logo" /></a>
+
+		<div style="color: #ffffff;" id="profile-links">
+			Hello, <%=patient.getFname() %> <%=patient.getLname() %><br /> <br /> <a href="login.jsp"
+				title="Sign Out" style="color: #b2b2b2;">Sign Out</a>
+		</div>
+
+		<ul id="main-nav">
+
+			<li><a id="account" class="nav-top-item no-submenu <%if(block.startsWith("0")) {%>current<%} %>" href="#">
+					Personal Info.
+			</a>
+				<ul>
+					<li><a <%if(block.equals("0_1")) {%>class="current"<%} %> href="./p_detail.jsp">Personal Info.</a></li>
+					<li><a <%if(block.equals("0_2")) {%>class="current"<%} %> href="./p_insurance_detail.jsp">Health Insurance Info.</a></li>
+					<li><a <%if(block.equals("0_4")) {%>class="current"<%} %> href="./p_changepassword.jsp">Change Password</a></li>
+					<!-- Add class "current" to sub menu items also -->
+
+				</ul></li>
+
+			<li><a id="system" class="nav-top-item no-submenu <%if(block.startsWith("1")) {%>current<%} %>" href="#">
+					Medical Records
+			</a>
+				<ul>
+					<li><a <%if(block.equals("1_1")) {%>class="current"<%} %> href="./p_search.jsp">My Medical Records</a></li>
+
+				</ul></li>
+
+			<li><a id="statistic" class="nav-top-item no-submenu <%if(block.startsWith("2")) {%>current<%} %>" href="#"> <!-- Add the class "current" to current menu item -->
+					Doctors
+			</a>
+				<ul>
+					<li><a <%if(block.equals("2_1")) {%>class="current"<%} %> href="./p_doctors.jsp">Search Doctors</a></li>
+
+				</ul></li>
+		</ul>
+	</div>
+</div>

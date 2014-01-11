@@ -1,0 +1,52 @@
+package com.emrs.dao;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+import com.emrs.jpa.JPAOperator;
+
+import com.emrs.po.Patient;
+
+public class PatientDAO {
+	private static PatientDAO INSTANCE = new PatientDAO();
+
+	private PatientDAO() {
+	}
+
+	public static PatientDAO getPatientDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Patient patient) {
+		JPAOperator.insert(patient);
+	}
+	
+	public Patient find(String pid) {
+		return JPAOperator.find(pid, Patient.class);
+	}
+	
+	public void update(Patient patient) {
+		JPAOperator.update(patient);
+	}
+	
+	public void delete(Patient patient) {
+		JPAOperator.delete(patient);
+	}
+	
+	public List<Patient> searchPatientByName(String keyword) {
+		String sql = "select p from Patient p where p.fname like '%"+ keyword +"%' or p.lname like '%" + keyword + "%'";
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword1", keyword);
+		map.put("keyword2", keyword);
+		return JPAOperator.query(sql, Patient.class, 1, Integer.MAX_VALUE / 2);
+	}
+	
+	public List<Patient> getAllPatient() {
+		String sql = "select p from Patient p";
+		return JPAOperator.query(sql, Patient.class, 1, Integer.MAX_VALUE / 2);
+	}
+	
+}

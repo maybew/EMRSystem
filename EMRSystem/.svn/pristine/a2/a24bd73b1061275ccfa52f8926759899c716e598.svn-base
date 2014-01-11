@@ -1,0 +1,38 @@
+package com.emrs.dao;
+
+import java.util.List;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Patientlist;
+
+public class PatientlistDAO {
+	private static PatientlistDAO INSTANCE = new PatientlistDAO();
+
+	private PatientlistDAO() {
+	}
+
+	public static PatientlistDAO getPatientlistDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Patientlist patientlist) {
+		JPAOperator.insert(patientlist);
+	}
+	
+	public Patientlist find(String plid) {
+		return JPAOperator.find(plid, Patientlist.class);
+	}
+	
+	public void update(Patientlist patientlist) {
+		JPAOperator.update(patientlist);
+	}
+	
+	public void delete(Patientlist patientlist) {
+		JPAOperator.delete(patientlist);
+	}
+	
+	public List<Patientlist> getPatientlistByDoctor(String did) {
+		String sql = "select p from Patientlist p where p.doctor = "+did;
+		return JPAOperator.query(sql, Patientlist.class, 1, Integer.MAX_VALUE / 2);
+	}
+}

@@ -1,0 +1,5 @@
+package com.emrs.config;
+
+public class Configure {
+	public static final int PAGESIZE = 10;
+}

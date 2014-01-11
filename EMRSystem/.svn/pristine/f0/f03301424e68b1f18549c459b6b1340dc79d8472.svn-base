@@ -1,0 +1,40 @@
+package com.emrs.dao;
+
+import java.util.List;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Patientlist;
+import com.emrs.po.Record;
+
+public class RecordDAO {
+	private static RecordDAO INSTANCE = new RecordDAO();
+	
+	private RecordDAO() {		
+	}
+	
+	public static RecordDAO getRecordDAO() {
+		return INSTANCE;
+	}
+	
+	public Integer insertRecord(Record record) {
+		return (Integer)JPAOperator.insertRecord(record);
+	}
+	
+	public Record find(int rid) {
+		return JPAOperator.find(rid, Record.class);
+	}
+	
+	public void update(Record record) {
+		JPAOperator.update(record);
+	}
+	
+	public void delete(Record record) {
+		JPAOperator.delete(record);
+	}
+	
+	public List<Record> getRecordByPatient(String pid) {
+		String sql = "select r from Record r where r.patient = "+pid;
+		return JPAOperator.query(sql, Record.class, 1, Integer.MAX_VALUE / 2);
+	}
+	
+}

@@ -1,0 +1,31 @@
+package com.emrs.dao;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Medical;
+
+public class MedicalDAO {
+	private static MedicalDAO INSTANCE = new MedicalDAO();
+	
+	private MedicalDAO() {		
+	}
+	
+	public static MedicalDAO getMedicalDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Medical medical) {
+		JPAOperator.insert(medical);
+	}
+	
+	public Medical find(int mid) {
+		return JPAOperator.find(mid, Medical.class);
+	}
+	
+	public void update(Medical medical) {
+		JPAOperator.update(medical);
+	}
+	
+	public void delete(Medical medical) {
+		JPAOperator.delete(medical);
+	}
+}

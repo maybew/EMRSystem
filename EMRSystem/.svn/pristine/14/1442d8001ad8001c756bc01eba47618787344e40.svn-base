@@ -1,0 +1,55 @@
+package com.emrs.dao;
+
+import java.util.List;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Position;
+
+public class PositionDAO {
+		private static PositionDAO INSTANCE = new PositionDAO();
+		
+		private PositionDAO() {
+		}
+		
+		public static PositionDAO getPositionDAO() {
+			return INSTANCE;
+		}
+		
+		public void insert(Position position) {
+			JPAOperator.insert(position);
+		}
+		
+		public Position find(int psid) {
+			return JPAOperator.find(psid, Position.class);
+		}
+		
+		public void update(Position position) {
+			JPAOperator.update(position);
+		}
+		
+		public void delete(Position position) {
+			JPAOperator.delete(position);
+		}
+		
+		public List<Position> getPositions(int pageNum,int pageSize) {
+			String sql = "select p from Position p";
+			List<Position> ld =JPAOperator.query(sql, null, Position.class, pageNum, pageSize);
+			
+			return ld;
+		}
+		
+		public List<Position> searchPositionByName(int pageNum, int pageSize, boolean order, String keyword) {
+			String sql = "select p from Position p";
+			String searchSql = " where p.name like '%"+keyword+"%'";
+			String orderSql = " order by p.name DESC";
+			
+			if(keyword != null)
+				sql += searchSql;
+			if(!order)
+				sql += orderSql;
+			
+			List<Position> ld =JPAOperator.query(sql, null, Position.class, pageNum, pageSize);
+			
+			return ld;
+		}
+}

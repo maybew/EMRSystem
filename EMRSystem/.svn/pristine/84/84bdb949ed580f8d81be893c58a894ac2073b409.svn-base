@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Test for add a patient!</h1>
+	<form action="signup">
+		<span>SSN</span>
+		<input type="text" name="pid" />
+		<span>password</span>
+		<input type="text" name="password" />
+		<span>birthdate</span>
+		<input type="text" name="birthdate" />
+		<span>firstname</span>
+		<input type="text" name="fname" />
+		<span>lastname</span>
+		<input type="text" name="lname" />
+		<input type="radio" name="gender" value="0" /> Male
+		<input type="radio" name="gender" value="1" /> Female
+		<input type="submit" value="submit" />
+		<input type="hidden" name="type" value="patient" />
+		
+	</form>
+	
+	<hr>
+	<h1>Test for search patient!</h1>
+	<form action="search">
+		<input type="radio" name="condition" value="0" /> By SSN <br />
+		<input type="text" name="pid" />
+		<input type="radio" name="condition" value="1" /> By Name <br />
+		<input type="text" name="keyword" />
+		<input type="submit" value="submit" />
+		<input type="hidden" name="type" value="allPatient">
+		
+	</form>
+	
+	<hr>
+	<h1>Test for add record!</h1>
+	<form action="record">
+		<input type="text" name="pid" />
+		<input type="text" name="health" />
+		<input type="text" name="visit" />
+		<input type="text" name="medical" />
+		<input type="hidden" name="action" value="addRecord" />
+		<input type="submit" />
+			</form>
+</body>
+</html>

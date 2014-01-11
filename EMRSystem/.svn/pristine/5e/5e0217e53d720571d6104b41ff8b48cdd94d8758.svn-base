@@ -1,0 +1,108 @@
+package com.emrs.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.emrs.po.Patient;
+import com.emrs.po.Record;
+import com.emrs.service.PatientService;
+import com.emrs.service.RecordService;
+import com.emrs.util.JSONUtils;
+
+@SuppressWarnings("serial")
+@WebServlet("/search")
+public class SearchServlet extends HttpServlet {
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		req.setCharacterEncoding("utf-8");
+		resp.setCharacterEncoding("utf-8");
+		resp.setContentType("application/json;UTF-8");
+		JSONObject object = new JSONObject();;
+
+		String action = req.getParameter("action");
+
+		if (action.equals("allPatient")) {
+			PatientService ps = new PatientService();
+			String condition = req.getParameter("condition");
+
+			if (condition.equals("0")) {
+				Patient patient = ps
+						.getPatientById(req.getParameter("keyword"));
+				List<Patient> array = new ArrayList<Patient>();
+				if (patient != null) {
+					array.add(patient);
+					try {
+						object.put("data", JSONUtils.toJSONArray(array));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				} else
+					return;
+
+			} else if (condition.equals("1")) {
+				object = new JSONObject();
+				try {
+					object.put("data", JSONUtils.toJSONArray(ps
+							.searchPatientByName(req.getParameter("keyword"), 1)));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				object = new JSONObject();
+				try {
+					object.put("data", JSONUtils.toJSONArray(ps.getAllPatient(1)));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		} else if (action.equals("searchRecord")) {
+			RecordService rs = new RecordService();
+			
+			String searchType = req.getParameter("searchType");
+			List<Record> lr = rs.searchRecord(1, Integer.valueOf(req.getParameter("orderType")),
+					searchType == null?0:Integer.valueOf(searchType),
+					req.getParameter("keyword"), req.getParameter("beginDate"),
+					req.getParameter("endDate"),
+					req.getParameter("department"),
+					Integer.valueOf(req.getParameter("gender")));
+			
+			try {
+				object.put("data", JSONUtils.toJSONArray(lr));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (action.equals("searchPatientlist")) {
+			PatientService ps = new PatientService();
+			
+		}
+		PrintWriter pw = resp.getWriter();
+		pw.print(object);
+		pw.close();
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(req, resp);
+	}
+
+}

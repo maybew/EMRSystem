@@ -1,0 +1,37 @@
+package com.emrs.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.emrs.dao.DoctorDAO;
+import com.emrs.dao.PatientDAO;
+import com.emrs.dao.PatientlistDAO;
+import com.emrs.dao.RecordDAO;
+import com.emrs.po.Doctor;
+import com.emrs.po.Patient;
+import com.emrs.po.Patientlist;
+
+public class RelationshipService {
+	PatientDAO pdao = PatientDAO.getPatientDAO();
+	DoctorDAO ddao = DoctorDAO.getDoctorDAO();
+	PatientlistDAO pldao = PatientlistDAO.getPatientlistDAO();
+	RecordDAO rdao = RecordDAO.getRecordDAO();
+	
+	public List<Patient> getPatientListByDoctor(String did) {
+		List<Patientlist> patientList = pldao.getPatientlistByDoctor(did);
+		List<Patient> patients = new ArrayList<Patient>();
+		for(Patientlist item : patientList) {
+			patients.add(item.getPatient());
+		}
+		return patients;
+	}
+	
+	public void addPatientToList(String pid, String did) {
+		Patient patient = pdao.find(pid);
+		Doctor doctor = ddao.find(did);
+		Patientlist patientlist = new Patientlist();
+		patientlist.setDoctor(doctor);
+		patientlist.setPatient(patient);
+		pldao.insert(patientlist);
+	}
+}

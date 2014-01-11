@@ -1,0 +1,36 @@
+package com.emrs.dao;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Admin;
+
+/**
+ * AdminDAO
+ * @author maybe
+ *
+ */
+public class AdminDAO {
+	private static AdminDAO INSTANCE = new AdminDAO();
+	
+	private AdminDAO() {		
+	}
+	
+	public static AdminDAO getAdminDAO() {
+		return INSTANCE;
+	}
+	
+	public void insert(Admin admin) {
+		JPAOperator.insert(admin);
+	}
+	
+	public Admin find(String aid) {
+		return JPAOperator.find(aid, Admin.class);
+	}
+	
+	public void update(Admin admin) {
+		JPAOperator.update(admin);
+	}
+	
+	public void delete(Admin admin) {
+		JPAOperator.delete(admin);
+	}
+}

@@ -1,0 +1,93 @@
+package com.emrs.service;
+
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.emrs.dao.DoctorDAO;
+import com.emrs.dao.HealthDAO;
+import com.emrs.dao.MedicalDAO;
+import com.emrs.dao.NoteDAO;
+import com.emrs.dao.PatientDAO;
+import com.emrs.dao.PatientlistDAO;
+import com.emrs.dao.RecordDAO;
+import com.emrs.dao.VisitDAO;
+import com.emrs.po.Doctor;
+import com.emrs.po.Health;
+import com.emrs.po.Medical;
+import com.emrs.po.Note;
+import com.emrs.po.Patient;
+import com.emrs.po.Record;
+import com.emrs.po.Visit;
+
+
+public class RecordService {
+	PatientDAO pdao = PatientDAO.getPatientDAO();
+	DoctorDAO ddao = DoctorDAO.getDoctorDAO();
+	PatientlistDAO pldao = PatientlistDAO.getPatientlistDAO();
+	RecordDAO rdao = RecordDAO.getRecordDAO();
+	HealthDAO hdao = HealthDAO.getHealthDAO();
+	MedicalDAO mdao = MedicalDAO.getMedicalDAO();
+	VisitDAO vdao = VisitDAO.getVisitDAO();
+	NoteDAO ndao = NoteDAO.getNoteDAO();
+	
+	public void addRecordFromReq(HttpServletRequest req) {
+		Record record = new Record();
+		
+		Doctor doctor = (Doctor) req.getSession().getAttribute("account");
+		Patient patient = pdao.find(req.getParameter("pid"));
+		
+		Date now = new Date();
+		record.setCtime(now);
+		record.setDoctor(doctor);
+		record.setMtime(now);
+		record.setPatient(patient);
+		
+		rdao.insert(record);
+		
+		this.addHealthToRecord(record, now, req.getParameter("health"));
+		this.addMedicalToRecord(record, now, req.getParameter("medical"));
+		this.addVisitToRecord(record, now, req.getParameter("visit"));
+		
+	}
+	
+	public void addHealthToRecord(Record record, Date date, String text) {
+		Health health = new Health();
+		
+		health.setCtime(date);
+		health.setRecord(record);
+		health.setText(text);
+		
+		hdao.insert(health);
+	}
+	
+	public void addMedicalToRecord(Record record, Date date, String text) {
+		Medical medical = new Medical();
+		
+		medical.setCtime(date);
+		medical.setRecord(record);
+		medical.setText(text);
+		
+		mdao.insert(medical);
+	}
+	
+	public void addVisitToRecord(Record record, Date date, String text) {
+		Visit visit = new Visit();
+		
+		visit.setCtime(date);
+		visit.setRecord(record);
+		visit.setText(text);
+		
+		vdao.insert(visit);
+	}
+	
+	public void addNoteToRecord(Record record, Date date, String text) {
+		Note note = new Note();
+		
+		note.setCtime(date);
+		note.setRecord(record);
+		note.setText(text);
+		
+		ndao.insert(note);
+	}
+}

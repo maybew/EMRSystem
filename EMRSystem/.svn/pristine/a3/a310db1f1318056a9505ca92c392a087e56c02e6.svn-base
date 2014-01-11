@@ -1,0 +1,36 @@
+package com.emrs.service;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.emrs.dao.PatientDAO;
+import com.emrs.po.Patient;
+import com.emrs.util.TimeFormatter;
+
+public class PatientService {
+	PatientDAO dao = PatientDAO.getPatientDAO();
+	
+	public Patient getPatientById(String id) {
+		if(id.equals("") || id == null) return null;
+		return dao.find(id);
+	}
+	
+	public List<Patient> searchPatientByName(String keyword) {
+		if(keyword.equals("") || keyword == null) return dao.getAllPatient();
+		return dao.searchPatientByName(keyword);
+	}
+	
+	public void addPatientFromReq(HttpServletRequest req) {
+		Patient patient = new Patient();
+		
+		patient.setPid(req.getParameter("pid"));
+		patient.setPassword(req.getParameter("password"));
+		patient.setFname(req.getParameter("fname"));
+		patient.setLname(req.getParameter("lname"));
+		patient.setBirthdate(TimeFormatter.getDate(req.getParameter("birthdate")));
+		patient.setGender(Integer.valueOf(req.getParameter("gender")));
+		
+		dao.insert(patient);
+	}
+}

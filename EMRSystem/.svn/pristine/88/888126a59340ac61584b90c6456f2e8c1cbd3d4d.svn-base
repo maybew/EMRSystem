@@ -1,0 +1,81 @@
+package com.emrs.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.emrs.po.Patient;
+import com.emrs.service.PatientService;
+import com.emrs.util.JSONUtils;
+
+@SuppressWarnings("serial")
+@WebServlet("/search")
+public class SearchServlet extends HttpServlet {
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		req.setCharacterEncoding("utf-8");
+		resp.setCharacterEncoding("utf-8");
+		resp.setContentType("application/json;UTF-8");
+		JSONObject object = null;
+		
+		String type = req.getParameter("type");
+		
+		if(type.equals("allPatient")) {
+			PatientService ps = new PatientService();			
+			String condition = req.getParameter("condition");
+			
+			if(condition.equals("0")) {
+				Patient patient = ps.getPatientById(req.getParameter("keyword"));
+				List<Patient> array = new ArrayList<Patient>();
+				if(patient != null) {
+					array.add(patient);
+					object = new JSONObject();
+					try {
+						object.put("data", JSONUtils.toJSONArray(array));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+				else return;
+				
+			} else if(condition.equals("1")) {
+				object = new JSONObject();
+				try {
+					object.put("data", JSONUtils.toJSONArray(ps.searchPatientByName(req.getParameter("keyword"))));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				object = new JSONObject();
+				
+			}
+			PrintWriter pw = resp.getWriter();
+			pw.print(object);
+			pw.close();
+		} 
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(req, resp);
+	}
+	
+
+}

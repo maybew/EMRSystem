@@ -1,0 +1,32 @@
+package com.emrs.dao;
+
+import com.emrs.jpa.JPAOperator;
+import com.emrs.po.Record;
+
+public class RecordDAO {
+	private static RecordDAO INSTANCE = new RecordDAO();
+	
+	private RecordDAO() {		
+	}
+	
+	public static RecordDAO getRecordDAO() {
+		return INSTANCE;
+	}
+	
+	public Integer insertRecord(Record record) {
+		return (Integer)JPAOperator.insertRecord(record);
+	}
+	
+	public Record find(int rid) {
+		return JPAOperator.find(rid, Record.class);
+	}
+	
+	public void update(Record record) {
+		JPAOperator.update(record);
+	}
+	
+	public void delete(Record record) {
+		JPAOperator.delete(record);
+	}
+	
+}
